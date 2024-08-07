@@ -17,12 +17,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(urlencoded({ extended: false }));
-const port = env.port; /*
-const baseURL =
-  env.node_env === "development" ? "/krypto/api/v1" : "/krypto/api/v1/stag";
+const port = env.port; 
 
-app.use(baseURL, rootRouter);*/
-// route for home page
 app.get("/", (req, res) => {
   res.send("Welcome to Cue home route, Enjoy 🔥");
 });

@@ -46,6 +46,4 @@ userAuthRoutes.post(
   Validate(validateForgotPassword),
   resendOtpHandler
 );
-
-
 export default userAuthRoutes;
