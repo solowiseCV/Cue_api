@@ -1,5 +1,3 @@
-import { boolean, required } from 'joi';
-
 import mongoose from 'mongoose';
 
 const bookingSchema = new mongoose.Schema({
@@ -31,7 +29,7 @@ const bookingSchema = new mongoose.Schema({
   },
 
   total_amount: {
-    type: number,
+    type: Number,
     required: true
 
   },
