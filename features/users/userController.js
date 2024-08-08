@@ -19,7 +19,7 @@ const {
 
 export default class UserController {
     async createUser(req, res) {
-        const { email, name ,password,phone,role} = req.body;
+        const { email,password,role} = req.body;
 
         //checks if another user with email exists
         if (await findByEmail(email)) {
@@ -34,9 +34,8 @@ export default class UserController {
 
         //creates a user if the email doesn't exist
         const createdUser = await createUser({
-            name,
+            
             email,
-            phone,
             role,
             password:validPassword
         });
@@ -246,18 +245,18 @@ async sendResetLink(req, res) {
     });
    let RESETPASSWORDLINK;
     // Send the reset email
-    const resetLink = `${RESETPASSWORDLINK}/?token=${token}`;
+    const resetLink = `TOKEN=${token}`;
     const emailData = {
       email: updatedUser.email,
-      subject: "Reset Media Hub's password",
+      subject: "Reset your account Cue password",
       html: `
         <html>
           <body style="font-family: sans-serif;">
             <div style="display: block; margin: auto; max-width: 600px;" class="main">
               <h1 style="font-size: 18px; font-weight: bold; margin-top: 20px">Hello ${updatedUser.email},</h1>
-              <p>You recently requested to reset your password for the Media Cue. To reset your password, click the link below:</p>
+              <p>You recently requested to reset your password for Cue. To reset your password,copy the token:</p>
               <p>${resetLink}</p>
-              <p>Please note that this link is temporary and will expire in 1 hour. If you did not request a password reset, you can safely ignore this email. Your password will remain unchanged.</p>
+              <p>Please note that this token is temporary and will expire in 1 hour. If you did not request a password reset, you can safely ignore this email. Your password will remain unchanged.</p>
               <p>If you have any questions or need further assistance, please contact our support team at u.ali@genesystechhub.com.</p>
               <p>Best regards,</p>
               <p>The Cue Team.</p>
@@ -268,55 +267,89 @@ async sendResetLink(req, res) {
     };
 
     await sendEmail(emailData);
-    console.log('Reset link sent successfully');
+    console.log('Reset token sent successfully');
 
     return res.status(200).send({
       success: true,
-      message: 'Reset link sent successfully',
+      message: 'Reset token sent successfully',
     });
   } catch (error) {
-    console.error('Error sending reset link:', error);
+    console.error('Error sending reset token:', error);
     return res.status(500).send({
       success: false,
       message: 'Internal Server Error',
     });
   }
 }
+async resetPassword(req, res) {
+    const token = req.params.token;
+    let { email, password, confirmPassword } = req.body;
 
-    async resetPassword(req, res) {
-        const token = req.params.token;
-        console.log(token)
-        const user = await findOneByFilter({
-            email: req.body.email,
-            resetToken: token,
-            // tokenExpiration: {
-            //     $gte: Date.now()
-            // }
-        })
-        console.log("reste pass",user)
-        if (!user) {
-            return res.status(404)
-                .send({
-                    success: false,
-                    message: "Invalid token"
-                });
-        }
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
-        const updatedUser = await editById(String(user._id), { password: hashedPassword });
-
-        // Generate JWT token
-        const jwtToken = jwt.sign({
-            _id: user._id,
-            email: user.email,
-            role: user.role
-        }, env.jwt_key, { expiresIn: (7 * 24 * 60 * 60) });
-
-        // only return the needed fields of user
-        res.cookie('token', jwtToken, { httpOnly: true, maxAge: (7 * 24 * 60 * 60 * 1000) }).status(200).send({
-            message: 'Password reset successfully',
-            success: true,
-            data: updatedUser
+    // Ensure password and confirmPassword are defined
+    if (typeof password !== 'string' || typeof confirmPassword !== 'string') {
+        return res.status(400).send({
+            success: false,
+            message: "Invalid request data"
         });
     }
+
+    // Trim any extra spaces
+    password = password.trim();
+    confirmPassword = confirmPassword.trim();
+
+    // Debug logging
+    console.log(`Received password: '${password}'`);
+    console.log(`Received confirmPassword: '${confirmPassword}'`);
+
+    // Validate that passwords match
+    if (password !== confirmPassword) {
+        console.log("Passwords do not match");
+        return res.status(400).send({
+            success: false,
+            message: "Passwords do not match"
+        });
+    }
+
+    // Find the user by email and reset token with token expiration check
+    const user = await findOneByFilter({
+        email: email,
+        resetToken: token,
+        tokenExpiration: { $gte: Date.now() } // Check token validity
+    });
+
+    if (!user) {
+        console.log("User not found or token is invalid/expired");
+        return res.status(404).send({
+            success: false,
+            message: "Invalid or expired token"
+        });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Update the user's password and clear the reset token and expiration
+    const updatedUser = await editById(String(user._id), {
+        password: hashedPassword,
+        resetToken: null,         // Optionally clear the reset token
+        tokenExpiration: null     // Optionally clear the token expiration
+    });
+
+    // Generate a new JWT token
+    const jwtToken = jwt.sign({
+        _id: user._id,
+        email: user.email,
+        role: user.role
+    }, env.jwt_key, { expiresIn: (7 * 24 * 60 * 60) });
+
+    // Set the token as a cookie and respond
+    res.cookie('token', jwtToken, { httpOnly: true, maxAge: (7 * 24 * 60 * 60 * 1000) }).status(200).send({
+        message: 'Password reset successfully',
+        success: true,
+        data: updatedUser
+    });
+}
+
+
+
 }
