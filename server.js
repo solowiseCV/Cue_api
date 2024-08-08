@@ -6,6 +6,7 @@ import baseRoutes from "./features/appRoute.js";
 import env from "./configs/env.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import connectDB from "./configs/db.js";
+import cookieParser from "cookie-parser";
 
 
 
@@ -14,9 +15,18 @@ const rootRouter = baseRoutes(router);
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors(
+      {
+          origin:["http://localhost:5173","https://cue.vercel.app"],
+          credentials:true,
+      }
+  )
+);
 app.use(express.json());
 app.use(urlencoded({ extended: false }));
+app.use(cookieParser());
+
 const port = env.port; 
 
 app.get("/", (req, res) => {

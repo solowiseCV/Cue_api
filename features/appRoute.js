@@ -1,8 +1,8 @@
-import authRoute from './authentication/authRoute.js'
+import userRoute from './users/userRoute.js'
 
 
 export default (router) => {
-  router.use("/users",authRoute);
+  router.use("/users",userRoute);
    
   return router;
 };
