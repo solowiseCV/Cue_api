@@ -19,14 +19,19 @@ const flightSchema = new mongoose.Schema({
     required: true
   },
 
+  airline: {
+    type: String,
+    required: true
+  },
+
   departure_date: {
-    type: Date,
+    type: Date, default: Date.now,
     required: true
 
   },
 
   arrival_date: {
-    type: Date,
+    type: Date, default: Date.now,
     required: true
   },
 
@@ -36,12 +41,12 @@ const flightSchema = new mongoose.Schema({
   },
 
   created_at: {
-    type: Date,
+    type: Date, default: Date.now,
     required : true
   },
 
   updated_at: {
-    type: Date,
+    type: Date, default: Date.now,
     required : true
   },
 

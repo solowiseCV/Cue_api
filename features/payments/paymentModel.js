@@ -5,7 +5,7 @@ const paymentSchema = new mongoose.Schema({
   
 
   booking_id: {
-     type: Schema.Types.ObjectId, ref :'Booking'
+    type: Schema.Types.ObjectId, ref :'Booking'
   },
     
 
@@ -15,7 +15,7 @@ const paymentSchema = new mongoose.Schema({
   },
 
   payment_date:{
-    type: Date,
+    type: Date, default: Date.now,
     required: true
   },
 
@@ -30,12 +30,12 @@ const paymentSchema = new mongoose.Schema({
   },
 
   updated_at: {
-    type: Date,
+    type: Date, default: Date.now,
     required : true
   },
 
   created_at: {
-    type: Date,
+    type: Date, default: Date.now,
     required : true
   },
 
