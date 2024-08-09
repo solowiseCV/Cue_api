@@ -19,6 +19,17 @@ const editSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required().min(6),
 });
+//Joi schema for creating hotel
+const createHotelSchema = Joi.object({
+  name: Joi.string().required(),
+  type: Joi.string().required(),
+  city: Joi.string().required(),
+  address: Joi.string().required(),
+  destination: Joi.string().required(),
+  rating: Joi.number(),
+  
+  password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required().min(6),
+});
 
 // Middleware function for signup validation
 export const validateSignUp = (req, res, next) => {

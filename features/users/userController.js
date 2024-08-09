@@ -86,7 +86,7 @@ export default class UserController {
         });
     }
 
-    async editUserById(req, res) {
+    async editUserById(req, res) {ain
         const id = req.params.userId;
         const data = req.body;
 
@@ -281,9 +281,10 @@ async sendResetLink(req, res) {
     });
   }
 }
+
 async resetPassword(req, res) {
     const token = req.params.token;
-    let { email, password, confirmPassword } = req.body;
+    let { password, confirmPassword } = req.body;
 
     // Ensure password and confirmPassword are defined
     if (typeof password !== 'string' || typeof confirmPassword !== 'string') {
@@ -297,28 +298,21 @@ async resetPassword(req, res) {
     password = password.trim();
     confirmPassword = confirmPassword.trim();
 
-    // Debug logging
-    console.log(`Received password: '${password}'`);
-    console.log(`Received confirmPassword: '${confirmPassword}'`);
-
     // Validate that passwords match
     if (password !== confirmPassword) {
-        console.log("Passwords do not match");
         return res.status(400).send({
             success: false,
             message: "Passwords do not match"
         });
     }
 
-    // Find the user by email and reset token with token expiration check
+    // Find the user by reset token and check token validity
     const user = await findOneByFilter({
-        email: email,
         resetToken: token,
         tokenExpiration: { $gte: Date.now() } // Check token validity
     });
 
     if (!user) {
-        console.log("User not found or token is invalid/expired");
         return res.status(404).send({
             success: false,
             message: "Invalid or expired token"
@@ -331,8 +325,8 @@ async resetPassword(req, res) {
     // Update the user's password and clear the reset token and expiration
     const updatedUser = await editById(String(user._id), {
         password: hashedPassword,
-        resetToken: null,         // Optionally clear the reset token
-        tokenExpiration: null     // Optionally clear the token expiration
+        resetToken: null,         // Clear the reset token
+        tokenExpiration: null     // Clear the token expiration
     });
 
     // Generate a new JWT token
@@ -349,7 +343,5 @@ async resetPassword(req, res) {
         data: updatedUser
     });
 }
-
-
 
 }
