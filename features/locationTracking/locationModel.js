@@ -1,32 +1,10 @@
 import mongoose from 'mongoose';
 
-const locationSchema = new mongoose.Schema({
+const LocationTrackingSchema = new mongoose.Schema({
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    latitude: { type: Number, required: true },
+    longitude: { type: Number, required: true },
+    timestamp: { type: Date, default: Date.now }
+});
 
-  user_id: {
-    type: Schema.Types.ObjectId, ref :'User'
-  },
-  
-  latitude:{
-    type: Number, Default: 0.0,
-    required: true
-
-  },
-  longitude: {
-    type: Number, Default: 0.0,
-    required: true
-
-  },
-
-  timestamp: {
-    type: Date,
-    required: true
-  },
-
-
-
-},{timestamps:true});
-
-
-
-const Location = mongoose.model('Location', locationSchema);
-export default Location;
+export default mongoose.model('LocationTracking', LocationTrackingSchema);

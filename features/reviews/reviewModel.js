@@ -1,40 +1,12 @@
 import mongoose from 'mongoose';
 
-const reviewSchema = new mongoose.Schema({
+const ReviewSchema = new mongoose.Schema({
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    hotel_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Hotel', required: true },
+    rating: { type: Number, required: true },
+    comment: { type: String },
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now }
+});
 
-    user_id: {
-        type: Schema.Types.ObjectId, ref :'User'
-     },
-
-  hotel_id: {
-     type: Schema.Types.ObjectId, ref :'Hotel'
-  },
-    
-  rating: {
-    type: Number, default : 0.0,
-    required: true
-  },
-
-  comment: {
-    type: String,
-    required : true
-  },
-
-  updated_at: {
-    type: Date,
-    required : true
-  },
-
-  created_at: {
-    type: Date,
-    required : true
-  },
-
-
-
-},{timestamps:true});
-
-
-
-const Review = mongoose.model('Review', reviewSchema);
-export default Review;
+export default mongoose.model('Review', ReviewSchema);

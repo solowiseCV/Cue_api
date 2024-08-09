@@ -1,52 +1,14 @@
 import mongoose from 'mongoose';
 
-const scheduleSchema = new mongoose.Schema({
+const TravelScheduleSchema = new mongoose.Schema({
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    booking_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Booking', required: true },
+    event_name: { type: String, required: true },
+    event_description: { type: String },
+    start_time: { type: Date, required: true },
+    end_time: { type: Date, required: true },
+    created_at: { type: Date, default: Date.now },
+    updated_at: { type: Date, default: Date.now }
+});
 
-
-     user_id: {
-        type: Schema.Types.ObjectId, ref :'User'
-    },
-
-    booking_id: {
-        type: Schema.Types.ObjectId, ref :'Booking'
-    },
-        
-
-    event_name: {
-        type: String,
-        required: true
-    },
-
-    event_description: {
-        type: String,
-        required: true
-    },
-
-    start_time:{
-        type: Date,
-        required: true
-    },
-
-    end_time: {
-        type: Date,
-        required : true
-    },
-
-    updated_at: {
-        type: Date,
-        required : true
-    },
-
-    created_at: {
-        type: Date,
-        required : true
-    },
-
-
-
-    },{timestamps:true});
-
-
-
-    const Schedule = mongoose.model('Schedule', scheduleSchema);
-    export default Schedule;
+export default mongoose.model('TravelSchedule', TravelScheduleSchema);

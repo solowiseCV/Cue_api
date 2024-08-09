@@ -1,10 +1,11 @@
 import userRoute from './users/userRoute.js'
-import hotelRoute from './users/userRoute.js'
+import hotelRoute from './hotels/hotelRoute.js'
+import roomRoute from './rooms/roomRoute.js'
 
 
-export default (router) => {
-  router.use("/users",userRoute);
-  router.use("/hotels",hotelRoute);
-   
-  return router;
+export default (appRouter) => {
+  appRouter.use("/users",userRoute);
+  appRouter.use("/hotels",hotelRoute);
+  appRouter.use("/",roomRoute);
+  return appRouter;
 };
